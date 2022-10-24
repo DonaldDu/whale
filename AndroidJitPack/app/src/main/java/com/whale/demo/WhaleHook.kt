@@ -9,18 +9,20 @@ object WhaleHook {
         hookAndroidId()
     }
 
-    fun hookAndroidId() {
+    private fun hookAndroidId() {
         XposedBridge.log("start androidId")
         //android.provider.Settings.Secure#getString
-        val getString = android.provider.Settings.Secure::class.java.getDeclaredMethod(
-            "getString", android.content.ContentResolver::class.java,
-            java.lang.String::class.java
+        val clazz = android.provider.Settings.Secure::class.java
+        val getString = clazz.getDeclaredMethod(
+            "getString", android.content.ContentResolver::class.java, java.lang.String::class.java
         )
         XposedBridge.hookMethod(getString, object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val key = param.args.last()
                 if (key == android.provider.Settings.Secure.ANDROID_ID) {
-                    println("hookAndroidId to 0")
+                    val msg = "hookAndroidId to 0"
+                    println(msg)
+                    Exception(msg).printStackTrace()//print call StackTrace
                     param.result = "0"
                 }
             }
